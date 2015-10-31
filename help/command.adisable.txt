@@ -1,0 +1,4 @@
+AigisPermissions
+adis
+[bold]%TRIG%adisable <command>[bold] - Disables <command> on the channel where the command was issued.
+[bold]Note[bold]: You need to be +o to do this command.

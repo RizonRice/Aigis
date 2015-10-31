@@ -1,0 +1,5 @@
+AigisPermissions
+
+[bold]%TRIG%login <username> <password>[bold] - Logs you in.
+To register, see [bold]help register[bold]
+[bold]Note[bold]: This command only works in private messages.

@@ -1,0 +1,6 @@
+Quotes
+aq
+[bold]%TRIG%aquote[bold] - Lists a random quote.
+[bold]aquote <number>[bold] - Lists given quote ID.
+[bold]aquote add <quote>[bold] - Adds a quote.
+[bold]aquote last[bold] - ([color]1Not Yet Implemented[color]) Shows the latest quote.

@@ -1,0 +1,3 @@
+Tell
+
+[bold]%TRIG%tell <user> <message>[bold] - Tells <user> <message> when (s)he joins a channel/says something.

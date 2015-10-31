@@ -1,0 +1,4 @@
+AigisGames
+roll
+[bold]%TRIG%dice/roll <pattern>[bold] - Roll dice according to <pattern>.
+[bold]Pattern[bold]: (number of dice)d(number of sides in each die) (example: 1d20 rolls one twenty-sided die.)

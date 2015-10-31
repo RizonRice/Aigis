@@ -1,0 +1,3 @@
+AigisGames
+flip
+[bold]%TRIG%coin[bold] - Flips a coin.

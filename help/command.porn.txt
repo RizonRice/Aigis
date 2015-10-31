@@ -1,0 +1,4 @@
+LewdIRC
+
+[bold]%TRIG%porn [country][bold] - Returns a porn search result from PornMD's live search. If [country] is specified, it'll return results of said country.
+List of available countries: USA, Canada, Germany, Mexico, India, France and Italy

@@ -1,0 +1,5 @@
+AigisPermissions
+
+[bold]register <username> <password> <password>[bold] - Register for an Aigis account.
+To log in, see [bold]help login[bold]
+[bold]NOTE[bold]: This command only works in private messages.

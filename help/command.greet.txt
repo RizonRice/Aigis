@@ -1,0 +1,6 @@
+Greets
+
+[bold]%TRIG%greet[bold] - Greet management.
+[bold]greet show|display [user][bold] - Shows your current greet or [user]'s greet if passed.
+[bold]greet set <greet>[bold] - Sets your current greet to <greet>.
+[bold]greet del|delete|rm[bold] - Removes your greet.

@@ -1,0 +1,4 @@
+Help
+h man
+[bold]%TRIG%help[bold] - Lists all commands.
+[bold]%TRIG%help <command>[bold] - Displays information on <command>
