@@ -7,6 +7,11 @@ Packages (WAMP on Windows has all of this): PHP5 and MySQL (for the LinkInfo plu
 
 PHP modules: MySQLnd, cURL (for link parsing), PCRE, PCNTL (for restart command)
 
+Replier.php requires the following aside from PHP5:
+
+Python 3
+markovify (`pip install markovify`)
+
 If you don't want to/can't get these modules, just don't include the plugins that use them. However, AigisIRC's core requires PCRE, making it the only absolutely required PHP module.
 
 ### How to use
