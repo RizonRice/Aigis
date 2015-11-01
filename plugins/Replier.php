@@ -34,6 +34,8 @@ class Replier extends PlugIRC_Core{
 		$this->PlugIRC->requirePermission($MessIRC, "reply.MARKOV");
 
 		$chan = $MessIRC->getReplyTarget();
+		if(!isset($this->throttle[$chan]))
+			$this->throttle[$chan] = time();
 		if(time() - $this->throttle[$chan] < self::THROTTLE_TIME)
 			return;
 
