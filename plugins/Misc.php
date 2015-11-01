@@ -20,7 +20,9 @@ $this->triggers = array(
 "g"        => "googleIt",
 "decide"   => "decide"
 );
-$this->PlugIRC->setDefaultPerms(array("misc.PLUGINS_LOAD" => false, "misc.PLUGINS_UNLOAD" => false));
+$this->PlugIRC->setDefaultPerms(array(
+	"misc.PLUGINS.LOAD" => false,
+	"misc.PLUGINS.UNLOAD" => false));
 }
 
 public function bots(MessIRC $MessIRC){
@@ -51,6 +53,10 @@ public function showPlugins(MessIRC $MessIRC){
 		if(strrchr($filename, ".") == ".php")
 			$plugins[] = substr($filename, 0, strlen($filename) - 4);
 	}
+	foreach(scandir(getenv('HOME')."/.config/aigis/plugins") as $filename){
+		if(strrchr($filename, ".") == ".php")
+			$plugins[] = substr($filename, 0, strlen($filename) - 4);
+	}
 
 	if(count($args) == 0){
 		$this->PlugIRC->requirePermission($MessIRC, "misc.PLUGINS.LIST");
@@ -77,7 +83,7 @@ public function showPlugins(MessIRC $MessIRC){
 
 		case "unload":
 		$args = $MessIRC->requireArguments(2);
-		$this->PlugIRC->requirePermission($MessIRC, "misc.PLUGINS.LOAD");
+		$this->PlugIRC->requirePermission($MessIRC, "misc.PLUGINS.UNLOAD");
 
 		$this->PlugIRC->unloadPlugin($args[1]);
 		$this->ConnIRC->msg($MessIRC->getReplyTarget(), "Plugin unloaded.");
