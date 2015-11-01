@@ -5,10 +5,10 @@
 
 // Require all of the modules.
 require_once "ConnIRC.php";
-require_once "PlugIRC.php";
 require_once "UserIRC.php";
 require_once "MessIRCManager.php";
 require_once "FontIRC.php";
+require_once "PlugIRC.php";
 
 class AigisIRCException extends Exception {}
 

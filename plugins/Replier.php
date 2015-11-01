@@ -35,7 +35,7 @@ class Replier extends PlugIRC_Core{
 
 		$chan = $MessIRC->getReplyTarget();
 		if(!isset($this->throttle[$chan]))
-			$this->throttle[$chan] = time();
+			$this->throttle[$chan] = 0;
 		if(time() - $this->throttle[$chan] < self::THROTTLE_TIME)
 			return;
 
