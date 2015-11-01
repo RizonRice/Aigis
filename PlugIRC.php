@@ -1,8 +1,12 @@
 <?php
 
 require_once "PlugIRC_Core.php";
-class NoticeException extends Exception {}
 
+// Include plugins.
+includeDirectory("plugins");
+includeDirectory(getenv("HOME")."/.config/aigis/plugins");
+
+class NoticeException extends Exception {}
 class PlugIRC{
 
 // PlugIRC

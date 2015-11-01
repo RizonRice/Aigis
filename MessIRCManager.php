@@ -2,8 +2,6 @@
 
 require_once "MessIRC.php";
 
-// Include all the plugins.
-includeDirectory("plugins");
 
 class MessIRCManager{
 
