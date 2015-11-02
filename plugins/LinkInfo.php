@@ -1,5 +1,6 @@
 <?php
 
+require_once "plugins/etc/curl.php";
 class LinkInfo extends PlugIRC_Core{
 
 const PLUGIN_NAME = "Link Information";
@@ -25,7 +26,7 @@ public function __construct(AigisIRC $AigisIRC){
 
 public function connect($time){
 	// Get IP address so that it's censored when links contain it.
-	$ipCheckCurl = self::getBody("http://checkip.dyndns.org/");
+	$ipCheckCurl = curl::getBody("http://checkip.dyndns.org/");
 	if(preg_match(
         "/Current IP Address: ([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})/",
         $ipCheckCurl,
@@ -53,7 +54,7 @@ public function privmsg(MessIRC $MessIRC){
 
 public function URLReply($link, MessIRC $MessIRC){
 	$AigisPermissions = $this->PlugIRC->getPlugin("AigisPermissions");
-	$headers = self::getHeaders($link);
+	$headers = curl::getHeaders($link);
 	if(!preg_match("/\sContent-Type: ?([^\s;]+)/i", $headers, $regex))
 		throw new Exception("LinkInfo::URLReply: Content-Type not found for ".$link);
 	$contentType = $regex[1];
@@ -102,7 +103,7 @@ public function URLReply($link, MessIRC $MessIRC){
 
 
 static public function URLTitle($url){
-	$page = self::getAll($url);
+	$page = curl::getAll($url);
 	if(preg_match("/<title>([^<]+)<\/title>/mi", $page, $title)){
 		$title = str_replace("\n", " ", $title[1]);
 		return trim(html_entity_decode($title));
@@ -119,7 +120,7 @@ static public function URLTitle($url){
 // YouTube
 
 public function YouTube($video, $returnRaw = false){
-	$json = self::getBody("https://www.googleapis.com/youtube/v3/videos?part=contentDetails,snippet,statistics&id=$video&key=".$this->YOUTUBE_API_KEY);
+	$json = curl::getBody("https://www.googleapis.com/youtube/v3/videos?part=contentDetails,snippet,statistics&id=$video&key=".$this->YOUTUBE_API_KEY);
 	if($json == "Invalid id")
 		return null;
 	$data = json_decode($json, true);
@@ -146,7 +147,7 @@ public function Reddit($url) {
 	$id = $urlparts[3];
 
 	$url = "https://www.reddit.com/by_id/t3_" . $id . ".json";
-	$data = self::getJsonBody($url);
+	$data = curl::getJson($url);
 
 	if(isset($data['error'])){
 		return " No such thread.";
@@ -182,7 +183,7 @@ public function Reddit($url) {
 // SoundCloud
 
 public function SoundCloud($url){
-	$json = self::getJsonBody("http://api.soundcloud.com/resolve?url=".$url."&client_id=".$this->SOUNDCLOUD_CLIENT_ID);
+	$json = curl::getJson("http://api.soundcloud.com/resolve?url=".$url."&client_id=".$this->SOUNDCLOUD_CLIENT_ID);
 	if(!isset($json['kind']))
 		throw new Exception("LinkInfo::SoundCloud: No kind found in \"$url\".");
 	switch($json['kind']){
@@ -249,50 +250,6 @@ static public function iso8601tohuman($iso8601, $returnString = false){
 	if($returnString) return rtrim($string);
 	else return $result;
 	
-}
-
-
-// Functions to simplify the cURL code.
-
-static public function getCurl($url){
-	if (!extension_loaded("cURL"))
-		throw new Exception("cURL module is required.");
-
-	$curl = curl_init($url);
-	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-	curl_setopt($curl, CURLOPT_MAXREDIRS, 5);
-	curl_setopt($curl, CURLOPT_TIMEOUT, 10);
-	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-	return $curl;
-}
-
-static public function getHeaders($url){
-	$curl = self::getCurl($url);
-	curl_setopt($curl, CURLOPT_HEADER, 1);
-	curl_setopt($curl, CURLOPT_NOBODY, 1);
-	$result = curl_exec($curl);
-	curl_close($curl);
-	return $result;
-}
-
-static public function getBody($url){
-	$curl = self::getCurl($url);
-	$result = curl_exec($curl);
-	curl_close($curl);
-	return $result;
-}
-
-static public function getJsonBody($url) {
-	return json_decode(self::getBody($url), true);
-}
-
-static public function getAll($url){
-	$curl = self::getCurl($url);
-	curl_setopt($curl, CURLOPT_HEADER, 1);
-	$result = curl_exec($curl);
-	curl_close($curl);
-	return $result;
 }
 
 }

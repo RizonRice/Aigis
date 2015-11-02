@@ -31,7 +31,9 @@ class Replier extends PlugIRC_Core{
 	}
 
 	public function privmsg(MessIRC $MessIRC){
-		$this->PlugIRC->requirePermission($MessIRC, "reply.MARKOV");
+		try{
+			$this->PlugIRC->requirePermission($MessIRC, "reply.MARKOV");
+		}catch(Exception $e){ return; }
 
 		$chan = $MessIRC->getReplyTarget();
 		if(!isset($this->throttle[$chan]))
