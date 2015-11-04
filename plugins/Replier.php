@@ -3,8 +3,7 @@
 
 class Replier extends PlugIRC_Core{
 
-	// Credit: https://github.com/TheReverend403/markovgen
-	const CORPUS_FILE = "plugins/etc/markov.txt";
+	const CORPUS_DIR  = "plugins/etc/markov";
 	const MARKOV_EXEC = "bin/markov.py";
 
 	const THROTTLE_TIME = 180;
@@ -13,13 +12,18 @@ class Replier extends PlugIRC_Core{
 
 	public function __construct(AigisIRC $AigisIRC){
 		parent::__construct($AigisIRC);
-		if(!file_exists(self::CORPUS_FILE))
+		
+		// Separate the markove files per network.
+		$corpusFile = self::CORPUS_DIR."/".$this->ConnIRC->getNetwork()".markov";
+		
+		
+		if(!file_exists($corpusFile))
 			throw new Exception("Corpus not found. Did you forget to generate it?");
 		if(!file_exists(self::MARKOV_EXEC))
 			throw new Exception("Markov generator not found.");
 
-		//exec(self::MARKOVGEN_EXEC.' reddit 4chan');
-		exec(self::MARKOV_EXEC, $this->lines);
+		$command = self::MARKOV_EXEC." $corpusFile";
+		exec($command, $this->lines);
 	}
 
 
