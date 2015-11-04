@@ -14,7 +14,7 @@ class Replier extends PlugIRC_Core{
 		parent::__construct($AigisIRC);
 		
 		// Separate the markove files per network.
-		$corpusFile = self::CORPUS_DIR."/".$this->ConnIRC->getNetwork()".markov";
+		$corpusFile = self::CORPUS_DIR."/".$this->ConnIRC->getNetwork().".markov";
 		
 		
 		if(!file_exists($corpusFile))
