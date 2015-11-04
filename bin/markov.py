@@ -1,7 +1,8 @@
 #!/usr/bin/python2
 import markovify
+import sys
 
-with open("/usr/aigis/plugins/etc/markov.txt") as f:
+with open(sys.argv[1]) as f:
     text = f.read()
 
 text_model = markovify.Text(text)
