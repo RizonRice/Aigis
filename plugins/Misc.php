@@ -18,7 +18,7 @@ $this->triggers = array(
 "fortune"  => "fortuneCookie",
 "google"   => "googleIt",
 "g"        => "googleIt",
-"decide"   => "decide"
+"florida"  => "Florida"
 );
 $this->PlugIRC->setDefaultPerms(array(
 	"misc.PLUGINS.LOAD" => false,
@@ -146,23 +146,17 @@ public function googleIt(MessIRC $MessIRC){
 	$this->ConnIRC->msg($MessIRC->getReplyTarget(), $link);
 }
 
-public function decide(MessIRC $MessIRC){
-	$this->PlugIRC->requirePermission($MessIRC, "misc.DECIDE");
-	$query = $MessIRC->requireArguments(2);
-	$decide = implode(" ", $query);
+public function Florida(MessIRC $MessIRC){
+	$this->PlugIRC->requirePermission($MessIRC, "misc.FLORIDAMAN");
 
-	if(in_array($query, "|")){
-		$choices = explode(" | ", $decide);
-	}elseif(in_array($query, "or")){
-		$choices = explode(" or ", $decide);
-	}elseif(in_array($query, ",")){
-		$choices = explode(", ", $decide);
-	}else
-		$choices = array("Yes.", "No.");
-
-	$decision = array_rand($choices);
-
-	$this->ConnIRC->msg($MessIRC->getReplyTarget(), $decision);
+	$reddit = curl::getJson("https://www.reddit.com/r/FloridaMan.json");
+	if(!is_array($reddit) OR !isset($reddit['data']['children']))
+		throw new Exception("Error parsing /r/floridaman.");
+	$posts = $reddit['data']['children'];
+	$id = array_rand($posts);
+	if(!isset($posts[$id]['data']['title']))
+		throw new Exception("Error parsing /r/floridaman.");
+	$adventure = $posts[$id]['data']['title'];
+	$this->ConnIRC->msg($MessIRC->getReplyTarget(), "/r/FloridaMan - $adventure");
 }
-
 }

@@ -8,4 +8,4 @@ with open(sys.argv[1]) as f:
 text_model = markovify.Text(text)
 
 for i in range(200):
-	print(text_model.make_short_sentence(140))
+	print(text_model.make_short_sentence(240))
