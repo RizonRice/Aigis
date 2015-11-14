@@ -31,7 +31,8 @@ class WebStuff extends PlugIRC_Core{
 			"nowplaying" => "LastFM",
 			"np"         => "LastFM",
 			// Google search.
-			"google"     => "Google"
+			"google" => "Google",
+			"g"      => "Google"
 		);
 	}
 

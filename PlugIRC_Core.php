@@ -34,8 +34,11 @@ public function triggerParse(MessIRC $MessIRC){
 
 	$triggers = $this->triggers;
 	$command = strtolower($MessIRC->command());
-	if($this->PlugIRC->getPermission($MessIRC, "command.$command") !== 2)
-		return;
+	if($help = $this->PlugIRC->getPlugin("Help")){
+		$full = $help->getFullCommand($command);
+		if($this->PlugIRC->getPermission($MessIRC, "command.$full") !== 2)
+			return;
+	}
 	if(isset($triggers[$command]) and method_exists($this, $triggers[$command])){
 		try{
 			call_user_func(array($this, $triggers[$command]), $MessIRC);

@@ -84,7 +84,7 @@ public function getAllPlugins($list= false){
 
 public function requirePlugin($plugin){
 	if(!isset($this->plugins[$plugin]))
-		throw new Exception("This plugin requires the following plugin: ".$plugin);
+		throw new Exception("Required plugin: $plugin");
 	return $this->plugins[$plugin];
 }
 

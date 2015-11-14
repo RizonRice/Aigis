@@ -16,7 +16,6 @@ public function __construct(AigisIRC $AigisIRC){
 	"man"  => "helpPage",
 	"h"    => "helpPage"
 	);
-	$this->prefixes = array("?");
 	$this->setCommandList();
 }
 
@@ -66,6 +65,17 @@ private function setCommandList(){
 			$this->helpPages[$command] = implode($fileLines);
 		}
 	}
+}
+
+public function getFullCommand($command){
+	if(isset($this->aliases[$command]))
+		$full = $this->aliases[$command];
+	elseif(isset($this->helpPages[$command]))
+		$full = $command;
+	else
+		$full = null;
+
+	return $full;
 }
 
 }

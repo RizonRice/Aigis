@@ -148,7 +148,7 @@ public function mode($channel, $mode){
 			$letterArray= str_split($modeLetters);
 			foreach($letterArray as $letter){
 				if($modeSymbol == "+")
-					$this->chanmodes[$channel][] = $letterArray;
+					$this->chanmodes[$channel][] = $letter;
 				else{
 					if(($chanmodeKey = array_search($letterArray, $this->chanmodes[$channel])) !== false)
 						unset($this->chanmodes[$channel][$chanmodeKey]);

@@ -258,24 +258,35 @@ public function enableCommand(MessIRC $MessIRC){
 	if(!$MessIRC->inChannel())
 		throw new Exception("This command only works in channels.");
 	$nickModes = $this->UserIRC->getUser($MessIRC->getNick())->getModes($MessIRC->getReplyTarget());
-	if(!in_array("h", $nickModes) || !in_array("o", $nickModes))
+	if(!in_array("h", $nickModes) && !in_array("o", $nickModes))
 		$this->PlugIRC->requirePermission($MessIRC, "permirc.TOGGLE_COMMANDS");
 
 	$command = strtolower($MessIRC->requireArguments(1)[0]);
-	$this->setChanPermission($MessIRC->getReplyTarget(), "command.$command", true);
-	$this->ConnIRC->msg($MessIRC->getReplyTarget(), "Command \"$command\" enabled. (enable/disable isn't complete, and I'm still looking for a way to also take aliases into account)");
+
+	$full = $this->PlugIRC->requirePlugin("Help")->getFullCommand($command);
+	if($full === null)
+		throw new Exception("Unknown command: $command");
+
+	$this->setChanPermission($MessIRC->getReplyTarget(), "command.$full", true);
+	$this->ConnIRC->msg($MessIRC->getReplyTarget(), "Enabled $full.");
 }
 
 public function disableCommand(MessIRC $MessIRC){
 	if(!$MessIRC->inChannel())
 		throw new Exception("This command only works in channels.");
 	$nickModes = $this->UserIRC->getUser($MessIRC->getNick())->getModes($MessIRC->getReplyTarget());
-	if(!in_array("h", $nickModes) || !in_array("o", $nickModes))
+	var_dump($nickModes);
+	if(!in_array("h", $nickModes) && !in_array("o", $nickModes))
 		$this->PlugIRC->requirePermission($MessIRC, "permirc.TOGGLE_COMMANDS");
 
 	$command = strtolower($MessIRC->requireArguments(1)[0]);
-	$this->setChanPermission($MessIRC->getReplyTarget(), "command.$command", false);
-	$this->ConnIRC->msg($MessIRC->getReplyTarget(), "Command \"$command\" disabled. (enable/disable isn't complete, and I'm still looking for a way to also take aliases into account)");
+
+	$full = $this->PlugIRC->requirePlugin("Help")->getFullCommand($command);
+	if($full === null)
+		throw new Exception("Unknown command: $command");
+
+	$this->setChanPermission($MessIRC->getReplyTarget(), "command.$full", false);
+	$this->ConnIRC->msg($MessIRC->getReplyTarget(), "Disabled $full.");
 }
 
 // ** Static functions **
