@@ -62,7 +62,7 @@ class AigisURL extends PlugIRC_Core{
 			if(in_array($flag, $flaglist['add'])){
 				// Check all of them first.
 				foreach($argv as $URL){
-					if(!urldb::checkURL($URL) and self::VALIDATE_URLS)
+					if(!urldb::checkURL($URL) and static::VALIDATE_URLS)
 						throw new Exception("Invalid URL: $URL");
 				}
 				// Now we add them.

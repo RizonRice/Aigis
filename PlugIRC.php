@@ -38,7 +38,7 @@ public function loadPlugin($plugin){
 	}catch(Exception $e){
 		unset($this->plugins[$plugin]);
 		consoleSend("Error loading $plugin: ".$e->getMessage(), "PlugIRC");
-		return false;
+		return $e;
 	}
 	consoleSend("Loaded $plugin.", "PlugIRC", "success");
 	return true;
