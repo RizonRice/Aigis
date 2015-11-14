@@ -11,12 +11,9 @@ parent::__construct($AigisIRC);
 
 $this->triggers = array(
 "bots"     => "bots",
-"seabears" => "seabearCircle",
-"plugin"   => "showPlugins",
 "halp"     => "needHalp",
 "uptime"   => "uptime",
 "source"   => "source",
-"florida"  => "Florida"
 );
 $this->PlugIRC->setDefaultPerms(array(
 	"misc.PLUGINS.LOAD" => false,
@@ -26,16 +23,6 @@ $this->PlugIRC->setDefaultPerms(array(
 public function bots(MessIRC $MessIRC){
 	$this->PlugIRC->requirePermission($MessIRC, "misc.BOTS");
 	$this->ConnIRC->msg($MessIRC->getReplyTarget(), "Reporting in! [PHP] Type \"?help\" for help.");
-}
-
-public function seabearCircle(MessIRC $MessIRC){
-	if(!$MessIRC->inChannel())
-		throw new Exception("PMs are already a circle, don't worry.");
-	$chan = $this->UserIRC->getChannel($MessIRC->getReplyTarget());
-	$nicks = $chan->nicklist();
-	$chosenNick = $nicks[array_rand($nicks)];
-
-	$this->ConnIRC->msg($MessIRC->getReplyTarget(), "gets near $chosenNick and draws a circle around both of them on the ground.", "ACTION");
 }
 
 public function needHalp(MessIRC $MessIRC){
@@ -69,20 +56,7 @@ public function uptime(MessIRC $MessIRC){
 }
 
 public function source(MessIRC $MessIRC){
-	$this->ConnIRC->msg($MessIRC->getReplyTarget(), AigisIRC::AIGISIRC_GITHUB);
+	$this->ConnIRC->msg($MessIRC->getReplyTarget(), "Source: ".AigisIRC::AIGISIRC_GITHUB);
 }
 
-public function Florida(MessIRC $MessIRC){
-	$this->PlugIRC->requirePermission($MessIRC, "misc.FLORIDAMAN");
-
-	$reddit = curl::getJson("https://www.reddit.com/r/FloridaMan.json");
-	if(!is_array($reddit) OR !isset($reddit['data']['children']))
-		throw new Exception("Error parsing /r/floridaman.");
-	$posts = $reddit['data']['children'];
-	$id = array_rand($posts);
-	if(!isset($posts[$id]['data']['title']))
-		throw new Exception("Error parsing /r/floridaman.");
-	$adventure = $posts[$id]['data']['title'];
-	$this->ConnIRC->msg($MessIRC->getReplyTarget(), "/r/FloridaMan - $adventure");
-}
 }

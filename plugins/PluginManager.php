@@ -2,6 +2,9 @@
 
 class PluginManager extends PlugIRC_Core{
 
+	const PLUGIN_NAME = "Plugin Manager";
+	const PLUGIN_DESC = "Tool for managing plugins.";
+
 	protected static $flags = array(
 		'load'   => array('-l', '--load'),
 		'unload' => array('-u', '--unload')
@@ -83,12 +86,32 @@ class PluginManager extends PlugIRC_Core{
 	public function unloadPlugin(MessIRC $MessIRC){
 		$this->PlugIRC->requirePermission($MessIRC, "plugins.UNLOAD");
 		$argv = $MessIRC->requireArguments(2);
+
+		if($argv[1] == "PluginManager")
+			throw new Exception("Could you not?");
+
 		$this->PlugIRC->unloadPlugin($argv[1]);
 		$this->ConnIRC->notice($MessIRC->getReplyTarget(), "Plugin successfully unloaded.");
 	}
 
 	public function getPluginInfo(MessIRC $MessIRC){
 		$this->PlugIRC->requirePermission($MessIRC, "plugins.INFO");
+		$plugin = $MessIRC->requireArguments(1)[0];
+
+		if(!class_exists($plugin) || !is_subclass_of($plugin, "PlugIRC_Core"))
+			throw new Exception("Plugin does not exist.");
+
+		$name = $plugin::PLUGIN_NAME;
+		$desc = $plugin::PLUGIN_DESC;
+		$ver  = $plugin::PLUGIN_VERSION;
+
+		$loaded = ($this->PlugIRC->getPlugin($plugin) !== null) ? "Loaded" : "Unloaded";
+
+		$reply = array();
+		$reply[] = "$name - $desc";
+		$reply[] = "Version $ver | $loaded";
+
+		$this->ConnIRC->msg($MessIRC->getReplyTarget(), $reply);
 	}
 
 	public static function getFullPlugins(){
