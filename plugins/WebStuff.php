@@ -3,6 +3,9 @@
 require_once "plugins/etc/curl.php";
 class WebStuff extends PlugIRC_Core{
 
+	const PLUGIN_NAME = "WebStuff";
+	const PLUGIN_DESC = "Fun web-based commands.";
+
 	const LASTFM_USERS = "plugins/etc/lastfm.json";
 
 	// General array for API keys.
@@ -77,9 +80,9 @@ class WebStuff extends PlugIRC_Core{
 
 		$artist = $track['artist']['#text'];
 		$name   = $track['name'];
-		$album  = $track['album']['#text'];
 		$this->ConnIRC->msg($MessIRC->getReplyTarget(),
-			"[$username] $artist - $name ($album)");
+			"[".$MessIRC->getNick()."] ".
+			FontIRC::italic("$artist - $name"));
 	}
 
 	public function setLFMUser(MessIRC $MessIRC){

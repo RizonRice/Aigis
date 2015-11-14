@@ -14,6 +14,7 @@ $this->triggers = array(
 "halp"     => "needHalp",
 "uptime"   => "uptime",
 "source"   => "source",
+"decide"   => "decide"
 );
 $this->PlugIRC->setDefaultPerms(array(
 	"misc.PLUGINS.LOAD" => false,
@@ -29,7 +30,7 @@ public function needHalp(MessIRC $MessIRC){
 	$this->ConnIRC->msg($MessIRC->getReplyTarget(), "https://www.youtube.com/watch?v=U5fJi2fJIsA");
 }
 
-public function secondsToReadable($time = 0){
+public static function secondsToReadable($time = 0){
 	$weeks = floor($time/604800);
 	$time  = $time - ($weeks * 604800);
 
@@ -57,6 +58,28 @@ public function uptime(MessIRC $MessIRC){
 
 public function source(MessIRC $MessIRC){
 	$this->ConnIRC->msg($MessIRC->getReplyTarget(), "Source: ".AigisIRC::AIGISIRC_GITHUB);
+}
+
+public function decide(MessIRC $MessIRC){
+	$choice = implode(" ", $MessIRC->requireArguments(1));
+
+	$arr = array();
+	// Separated by pipes.
+	if(preg_match('/\s\|\s/', $choice))
+		$arr = explode('|', $choice);
+	// Separated by commas.
+	elseif(preg_match('/\S,\s/', $choice))
+		$arr = explode(',', $choice);
+	// Separated by "or."
+	elseif(preg_match('/\sor\s/', $choice))
+		$arr = explode(' or ', $choice);
+	else
+		$arr = array('Yes.', 'No.');
+
+	$key = array_rand($arr);
+	$decided = trim($arr[$key]);
+
+	$this->ConnIRC->msg($MessIRC->getReplyTarget(), $MessIRC->getNick().": $decided");
 }
 
 }

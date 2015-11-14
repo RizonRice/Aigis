@@ -5,6 +5,8 @@ class Admin extends PlugIRC_Core{
 const DEFAULT_PART_MSG = "Memento Mori";
 const MESSAGES_FILE = "plugins/etc/quitMessages.txt";
 
+protected $botChannel = '#Aigis';
+
 public function __construct(AigisIRC $AigisIRC){
 parent::__construct($AigisIRC);
 
@@ -82,7 +84,7 @@ public function invite(MessIRC $MessIRC){
 		return;
 	}
 
-	$notify  = "lunarmage";
+	$botChannel = $this->botChannel;
 	$channel = $MessIRC->getMessage();
 	$this->ConnIRC->msg($botChannel, "Received an invite to $channel by ".$MessIRC->getNick());
 }
