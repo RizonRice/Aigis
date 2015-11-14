@@ -1,0 +1,4 @@
+WebStuff
+g
+[bold]%TRIG%google <search term>[bold] - Google something and then return the first result.
+Google's modifiers like site: and -term work with this command.

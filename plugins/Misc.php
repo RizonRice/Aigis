@@ -16,8 +16,6 @@ $this->triggers = array(
 "halp"     => "needHalp",
 "up"       => "uptime",
 "fortune"  => "fortuneCookie",
-"google"   => "googleIt",
-"g"        => "googleIt",
 "florida"  => "Florida"
 );
 $this->PlugIRC->setDefaultPerms(array(
@@ -133,17 +131,6 @@ public function fortuneCookie(MessIRC $MessIRC){
 	exec("fortune -s", $fortune);
 	$unlined = implode(" ", $fortune);
 	$this->ConnIRC->msg($MessIRC->getReplyTarget(), $unlined);
-}
-
-public function googleIt(MessIRC $MessIRC){
-	$this->PlugIRC->requirePermission($MessIRC, "misc.GOOGLE");
-
-	$query = $MessIRC->requireArguments(1);
-	$query = implode(" ", $query);
-	$query = str_replace(array("+", " "), array("%2B", "+"), $query);
-	$link  = "http://lmgtfy.com/?q=$query";
-
-	$this->ConnIRC->msg($MessIRC->getReplyTarget(), $link);
 }
 
 public function Florida(MessIRC $MessIRC){

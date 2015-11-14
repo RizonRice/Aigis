@@ -1,0 +1,6 @@
+WebStuff
+np
+[bold]%TRIG%nowplaying[bold] - Get currently playing song.
+[bold]How to set up[bold]: If your IRC nick and your Last.FM username differ, use %TRIG%nowplaying --set <your Last.FM username>
+Please note that this links your current nick to the Last.FM username. You have to do this for every one of your alternate nicks to use this command with them.
+[bold]How to use[bold]: Just use `%TRIG%nowplaying` to check your own tracks. To check another user's track, use `%TRIG%nowplaying <IRC nick>`. To check the track of a specific Last.FM user and not an IRC user, use `%TRIG%nowplaying --user <Last.FM user>`
