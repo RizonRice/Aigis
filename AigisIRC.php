@@ -17,7 +17,7 @@ class AigisIRC{
 // Version constants.
 const AIGISIRC_VERSION = '1.00';
 const AIGISIRC_VERNAME = '1.0 Pallas Athena';
-const AIGISIRC_GITHUB = "https://github.com/Joaquin-V/AigisIRC";
+const AIGISIRC_GITHUB = "https://github.com/MakotoYuki/Aigis/";
 // IRC modules.
 private $ConnIRC		= null;
 private $PlugIRC		= null;
