@@ -66,6 +66,16 @@ class urldb{
 		else return false;
 	}
 
+	public function replaceURL($name, $id, $new){
+		$db = $this->getDatabase();
+		if(!isset($db[$name][$id]))
+			return false;
+
+		$db[$name][$id] = $new;
+		$this->updateDatabase($db);
+		return true;
+	}
+
 	public function getDatabase(){
 		if(!file_exists($this->file))
 			throw new Exception("Database file was deleted.");

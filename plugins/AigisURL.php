@@ -106,7 +106,22 @@ class AigisURL extends PlugIRC_Core{
 
 			// Replace a URL.
 			elseif(in_array($flag, $flaglist['replace'])){
-				throw new Exception("NYI");
+				$argv = $MessIRC->requireArguments(3);
+				array_shift($argv);
+				// Check if the given ID exists.
+				$URLs = $this->urldb->getURLs($nick);
+				$ID = $argv[0];
+				$realID = $ID-1;
+				$URL = $argv[1];
+				if(!isset($URLs[$realID]))
+					throw new Exception("Unknown value: $ID");
+				if(!urldb::checkURL($URL) and static::VALIDATE_URLS)
+					throw new Exception("Invalid URL: $URL");
+
+				$this->urldb->replaceURL($nick, $realID, $URL);
+				$this->ConnIRC->msg($MessIRC->getReplyTarget(),
+					sprintf($this->messages['replace'],
+						ucfirst($this->words['singular'])));
 			}
 
 			// Unknown flag.
