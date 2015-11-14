@@ -1,4 +1,4 @@
-# AigisIRC
+# Aigis
 ## IRC bot written in PHP.
 
 ### Dependencies
@@ -25,6 +25,6 @@ If you don't want to/can't get these modules, just don't include the plugins tha
 
 ### Where in IRC to see Aigis in action
 
-On Rizon (as Aigis or the alt nick, NaotoShirogane): #Aigis, #dprk, #plex and #rice (owner nick is lunarmage)
+On Rizon (as Aigis or the alt nick, NaotoShirogane): #Aigis, #dprk and #rice (owner nick is lunarmage)
 
-Send me a message on either Rizon or through GitHub if you want me to run Aigis in your IRC network. Aigis joins any channel instantly when invited if on Rizon.
+Send me a message on either Rizon or through GitHub if you want me to run Aigis in your IRC network.
