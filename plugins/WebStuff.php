@@ -14,7 +14,7 @@ class WebStuff extends PlugIRC_Core{
 	// Last.FM
 	public $lfmUsers = array();
 	public $lfmFlags = array(
-		'set'  => array('-s', '--set'),
+		'set'  => array('-s', '--set', '-a', '--add'),
 		'user' => array('-u', '--user')
 		);
 
@@ -49,12 +49,18 @@ class WebStuff extends PlugIRC_Core{
 		// User asking for their own track.
 		if(!isset($argv[0]))
 			$username = $this->getLFMUser($MessIRC->getNick());
-		// User wants to set their Last.FM username.
-		elseif(in_array($argv[0], $this->lfmFlags['set']))
-			return $this->setLFMUser($MessIRC);
-		// User is asking for a specific Last.FM username and not another IRC user.
-		elseif(in_array($argv[0], $this->lfmFlags['user']))
-			$username = $MessIRC->requireArguments(2)[1];
+		// User sent a flag.
+		elseif(strpos($argv[0], "-") === 0){
+			// Set Last.FM user.
+			if(in_array($argv[0], $this->lfmFlags['set']))
+				return $this->setLFMUser($MessIRC);
+			// Get specific Last.FM user.
+			elseif(in_array($argv[0], $this->lfmFlags['user']))
+				$username = $MessIRC->requireArguments(2)[1];
+			else
+				throw new Exception('Usage: '.$MessIRC->command().
+					' [IRC nick] [--user <Last.FM user>] [--set <Last.FM user>]');
+		}
 		// User is asking for someone else's username.
 		else
 			$username = $this->getLFMUser($argv[0]);
@@ -76,7 +82,7 @@ class WebStuff extends PlugIRC_Core{
 		$track = $json['recenttracks']['track'][0];
 		if(!isset($track['@attr']['nowplaying']))
 			return $this->ConnIRC->msg($MessIRC->getReplyTarget(),
-				"$username isn't playing anything right now.");
+				$MessIRC->getNick()." isn't playing anything right now.");
 
 		$artist = $track['artist']['#text'];
 		$name   = $track['name'];
