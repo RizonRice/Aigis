@@ -82,12 +82,12 @@ class WebStuff extends PlugIRC_Core{
 		$track = $json['recenttracks']['track'][0];
 		if(!isset($track['@attr']['nowplaying']))
 			return $this->ConnIRC->msg($MessIRC->getReplyTarget(),
-				$MessIRC->getNick()." isn't playing anything right now.");
+				$username." isn't playing anything right now.");
 
 		$artist = $track['artist']['#text'];
 		$name   = $track['name'];
 		$this->ConnIRC->msg($MessIRC->getReplyTarget(),
-			"[".$MessIRC->getNick()."] ".
+			"[".$username."] ".
 			FontIRC::italic("$artist - $name"));
 	}
 
