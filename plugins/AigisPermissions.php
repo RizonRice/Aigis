@@ -275,7 +275,6 @@ public function disableCommand(MessIRC $MessIRC){
 	if(!$MessIRC->inChannel())
 		throw new Exception("This command only works in channels.");
 	$nickModes = $this->UserIRC->getUser($MessIRC->getNick())->getModes($MessIRC->getReplyTarget());
-	var_dump($nickModes);
 	if(!in_array("h", $nickModes) && !in_array("o", $nickModes))
 		$this->PlugIRC->requirePermission($MessIRC, "permirc.TOGGLE_COMMANDS");
 

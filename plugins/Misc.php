@@ -23,7 +23,7 @@ $this->PlugIRC->setDefaultPerms(array(
 
 public function bots(MessIRC $MessIRC){
 	$this->PlugIRC->requirePermission($MessIRC, "misc.BOTS");
-	$this->ConnIRC->msg($MessIRC->getReplyTarget(), "Reporting in! [PHP] Type \"?help\" for help.");
+	$this->ConnIRC->msg($MessIRC->getReplyTarget(), "Reporting in! [PHP]");
 }
 
 public function needHalp(MessIRC $MessIRC){
