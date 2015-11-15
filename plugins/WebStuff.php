@@ -1,19 +1,19 @@
 <?php
 
 require_once "plugins/etc/curl.php";
+require_once "plugins/etc/textdb.php";
 class WebStuff extends PlugIRC_Core{
 
 	const PLUGIN_NAME = "WebStuff";
 	const PLUGIN_DESC = "Fun web-based commands.";
 
-	const LASTFM_USERS = "plugins/etc/lastfm.json";
 
 	// General array for API keys.
 	protected $apikeys = array();
 
 	// Last.FM
-	public $lfmUsers = array();
-	public $lfmFlags = array(
+	protected $lfmTextdb;
+	protected $lfmFlags = array(
 		'set'  => array('-s', '--set', '-a', '--add'),
 		'user' => array('-u', '--user')
 		);
@@ -24,10 +24,10 @@ class WebStuff extends PlugIRC_Core{
 
 		$this->apikeys = $this->configFile['keys'];
 
+		// Last.FM
 		$network = $this->ConnIRC->getNetwork();
-		$db      = json_decode(file_get_contents(self::LASTFM_USERS), true);
-		if(isset($db[$network]))
-			$this->lfmUsers = $db[$network];
+		$dbFile = 'plugins/etc/textdb/'.$network.'.lastfm.json';
+		$this->lfmTextdb = new textdatabase($dbFile);
 
 		$this->triggers = array(
 			// Last.FM scrobble.
@@ -92,28 +92,18 @@ class WebStuff extends PlugIRC_Core{
 	}
 
 	public function setLFMUser(MessIRC $MessIRC){
-		$file    = file_get_contents(self::LASTFM_USERS);
-		$decode  = json_decode($file, true);
-		$network = $this->ConnIRC->getNetwork();
-		$nick    = strtolower($MessIRC->getNick());
+		$nick    = $MessIRC->getNick();
 		$user    = $MessIRC->requireArguments(2)[1];
 
-		if(!isset($decode[$network]))
-			$decode[$network] = array();
+		$this->lfmTextdb->setText($nick, $user);
 
-		$decode[$network][$nick] = $user;
-
-		$json = json_encode($decode);
-		$this->lfmUsers = $decode[$network];
-		file_put_contents(self::LASTFM_USERS, $json);
-		throw new Exception("Your Last.FM username has been set.");
+		$this->ConnIRC->msg($MessIRC->getReplyTarget(),
+			"$nick: Your Last.FM user has been set.");
 	}
 
 	public function getLFMUser($nick){
-		$lnick = strtolower($nick);
-
-		if(isset($this->lfmUsers[$lnick]))
-			return $this->lfmUsers[$lnick];
+		if($user = $this->lfmTextdb->getText($nick))
+			return $user;
 		else return $nick;
 	}
 
