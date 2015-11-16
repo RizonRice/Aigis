@@ -8,7 +8,6 @@ class AigisPermissions extends PlugIRC_Core{
 
 const PLUGIN_NAME = "Permissions";
 const PLUGIN_DESC = "Permissions manager.";
-protected $requireConfig = true;
 
 private $database = null;
 private $nickPerms = array();
@@ -16,7 +15,7 @@ private $nickPerms = array();
 public function __construct(AigisIRC $AigisIRC){
 	parent::__construct($AigisIRC);
 
-	$this->database = new AigisPermissions_DB($this->configFile['dbinfo'], $this->UserIRC, $this->ConnIRC->getNetwork());
+	$this->database = new AigisPermissions_DB($this->UserIRC, $this->ConnIRC->getNetwork());
 
 	$nickPerms = $this->database->fetchNickPermissions();
 	foreach($nickPerms as $permission){
@@ -130,7 +129,7 @@ public function register(MessIRC $MessIRC){
 	if(strlen($username) > 30)
 		throw new Exception("Username is too long.");
 
-	if($this->isTaken($username))
+	if($this->database->isTaken($username))
 		throw new Exception("Username is taken.");
 
 	if($password !== $confpass)
@@ -318,9 +317,5 @@ public static function parseBoolString($value){
 	}
 }
 
-// Keep the permissions server alive.
-public function ping(MessIRC $MessIRC){
-	$this->database->ping();
-}
 
 }
