@@ -3,6 +3,35 @@
 // AigisIRC
 // GitHub: https://github.com/Joaquin-V/AigisIRC
 
+// Create some constants.
+
+// Aigis configuration directory in home.
+define('AIGIS_HOME', getenv('HOME').'/.config/aigis');
+if(!file_exists(AIGIS_HOME))
+	mkdir(AIGIS_HOME, 0755, true);
+if(!is_dir(AIGIS_HOME)){
+	unlink(AIGIS_HOME);
+	mkdir(AIGIS_HOME, 0755, true);
+}
+
+// usr directory for random files like AigisURL/TextDB databases.
+define('AIGIS_USR', AIGIS_HOME.'/usr');
+if(!file_exists(AIGIS_USR))
+	mkdir(AIGIS_USR, 0755, true);
+
+// Home directory for plugins.
+define('AIGIS_HOMEPLG', AIGIS_HOME.'/plugins');
+if(!file_exists(AIGIS_HOMEPLG))
+	mkdir(AIGIS_HOMEPLG, 0755, true);
+
+// plugins/config for plugin configuration files.
+define('PLUGIRC_CONFIG',  'plugins/config');
+define('PLUGIRC_HOMECFG', AIGIS_HOMEPLG.'/config');
+if(!file_exists(PLUGIRC_HOMECFG))
+	mkdir(PLUGIRC_HOMECFG, 0755, true);
+
+
+
 // Require all of the modules.
 require_once "ConnIRC.php";
 require_once "UserIRC.php";
@@ -29,9 +58,6 @@ private $botNick		= "";
 private $altNick		= "";
 private $nsPass			= null;
 // Misc. information.
-private $autoJoin		= array();
-private $ajList			= array();
-const AUTOJOIN_DELAY		= 7;
 private $startTime		= 0;
 private $lastMsg		= 0;
 private $lastConn		= null;
@@ -55,19 +81,6 @@ public function setConnInfo($host, $port = 6667){
 	return $this->ConnIRC;
 }
 
-public function autoJoin($ajList = null){
-	if(is_null($ajList)){
-		foreach($this->autoJoin as $chan){ $this->ConnIRC->join($chan); }
-		$this->autoJoin = array();
-		return;
-	}elseif(is_array($ajList)){
-		foreach($ajList as $chan){
-			$this->autoJoin[] = $chan;
-		}
-	}elseif(is_string($ajList))
-		$this->autoJoin[] = $ajList;
-}
-
 public function nsIdentify(){
 	if(isset($this->nsPass))
 		$this->ConnIRC->send("PRIVMSG NickServ :IDENTIFY " . $this->nsPass);
@@ -82,7 +95,7 @@ public function loopCycle(){
 		$this->lastMsg = time();
 		$MessIRC = $this->MessIRCManager->getMessage($sockread);
 
-//		consoleSend($sockread, "ConnIRC", "info"); /* Uncomment to see the world through bot eyes. */
+		consoleSend($sockread, "ConnIRC", "info"); /* Uncomment to see the world through bot eyes. */
 
 		// Tell ConnIRC to parse RAW input.
 		if($MessIRC->getType() == "raw")
@@ -107,18 +120,11 @@ public function loopCycle(){
 		}
 	}
 
-	// Auto-join
-	if(!is_null($this->lastRegg) && time() - $this->lastRegg >= self::AUTOJOIN_DELAY && count($this->autoJoin) !== 0){
-		$this->autoJoin();
-	}
-
 	// Ping timeouts.
 	$time = time();
 	if($time - $this->lastMsg >= ConnIRC::ACTIVITY_TIMEOUT && $time - $this->lastConn >= ConnIRC::RECONNECT_DELAY){
-		consoleSend("Disconnected.","ConnIRC","warning");
+		consoleSend("Disconnected for ping timeout.","ConnIRC","warning");
 		$this->ConnIRC->connect();
-		$channels = $this->UserIRC->getSelf()->getChans();
-		$this->autoJoin($channels);
 	}
 }
 
@@ -132,6 +138,21 @@ public function getAigisVar($varname){
 // Sets an object's variable.
 public function setAigisVar($varname, $value){
 	$this->$varname = $value;
+}
+
+public static function getConfig($network){
+	if(!file_exists(AIGIS_HOME."/aigis.conf")){
+
+		if(file_exists("config/aigis.conf"))
+			$configF = parse_ini_file("config/aigis.conf", true);
+		else throw new Exception("Config file not found.");
+
+	}else $configF = parse_ini_file(AIGIS_HOME."/aigis.conf", true);
+	if(!isset($configF[$network]))
+		throw new Exception("Unknown network: $network");
+	$config = array_merge($configF['Global'], $configF[$network]);
+	$config['network'] = $network;
+	return $config;
 }
 
 }

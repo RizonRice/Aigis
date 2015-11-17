@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
-if(!chdir("/usr/aigis")){
-	fwrite(STDERR, "Couldn't load files on /usr/aigis.");
+if(!chdir(realpath(dirname(__FILE__)))){
+	fwrite(STDERR, "Couldn't load files on ".realpath(dirname(__FILE__)));
 	die(1);
 }
 
@@ -17,18 +17,8 @@ try{
 
 	if(!isset($argv[1]))
 		throw new Exception("No network specified.");
-	$network = $argv[1];
-	if(!file_exists(getenv("HOME")."/.config/aigis/aigis.conf")){
-		if(file_exists("config/aigis.conf"))
-			$configF = parse_ini_file("config/aigis.conf", true);
-		else throw new Exception("Config file not found.");
-	}else $configF = parse_ini_file(getenv("HOME")."/.config/aigis/aigis.conf", true);
+	$config = AigisIRC::getConfig($argv[1]);
 
-	if(!isset($configF[$network]))
-		throw new Exception("Unknown network: $network");
-
-	$config = array_merge($configF['Global'], $configF[$network]);
-	$config['network'] = $network;
 }catch(Exception $e){
 	fwrite(STDERR, $e->getMessage()."\n");
 	die(1);
@@ -49,13 +39,6 @@ foreach($config['PlugIRC_plugins'] as $plugin){
 	$PlugIRC->loadPlugin($plugin);
 }
 $PlugIRC->pluginSendAll("AigisStart", time());
-
-// Set autojoin information.
-if(isset($config['autoJoin'])){
-	$AigisIRC->autoJoin($config['autoJoin']);
-	$AigisIRC->setAigisVar("ajList", $config['autoJoin']);
-}
-
 $ConnIRC->connect();
 
 while(true){
