@@ -99,7 +99,7 @@ public function setNickPermission($nick, $permission, $value){
 		$exists->execute(array(
 			':nick' => $nick,
 			':perm' => $permission,
-			':net'  => $network
+			':net'  => $this->network
 		));
 		if($exists->fetchColumn() === 0)
 			$query = "INSERT INTO permissions_nick VALUES(:nick,:net,:perm,:value);";
@@ -108,9 +108,9 @@ public function setNickPermission($nick, $permission, $value){
 	}else throw new Exception("Error parsing database.");
 
 	if($sth = $this->PDO->prepare($query)){
-		$stmt->execute(array(
+		$sth->execute(array(
 			':nick'  => $nick,
-			':net'   => $network,
+			':net'   => $this->network,
 			':perm'  => $permission,
 			':value' => $value
 		));
