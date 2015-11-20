@@ -123,7 +123,7 @@ public function setChanPermission($chan, $permission, $value){
 		$exists->execute(array(
 			':chan' => $chan,
 			':perm' => $permission,
-			':net'  => $network
+			':net'  => $this->network
 		));
 		if($exists->fetchColumn() === 0)
 			$query = "INSERT INTO permissions_channel VALUES(:chan,:net,:perm,:value);";
@@ -134,7 +134,7 @@ public function setChanPermission($chan, $permission, $value){
 	if($sth = $this->PDO->prepare($query)){
 		$sth->execute(array(
 			':chan'  => $chan,
-			':net'   => $network,
+			':net'   => $this->network,
 			':perm'  => $permission,
 			':value' => $value
 		));
