@@ -43,8 +43,31 @@ class FontIRC{
 	}
 
 	public static function arr($array){
-		$formatted = str_replace(array('[bold]', '[italic]', '[underline]', '[colour]', /*For you americans*/'[color]'), array("\x02", "\x1D", "\x1F", "\x03", "\x03"), $array);
+		$formatted = str_replace(
+			array('[bold]', '[italic]', '[underline]',
+			'[colour]', '[color]'),
+			array("\x02", "\x1D", "\x1F",
+				"\x03", "\x03"), 
+			$array);
+
 		return $formatted;
+	}
+
+	public static function HTML2IRC($HTML){
+		$IRC = html_entity_decode($HTML);
+		$IRC = preg_replace_callback("/(&#[0-9]+;)/",
+			function($m){ return mb_convert_encoding($m[1], "UTF-8", "HTML-ENTITIES"); },
+			$IRC);
+
+		// HTML tags for bold, italic, underline and underline.
+		$IRC = preg_replace("/<b>(.*)<\/b>/", self::bold('$1'), $IRC);
+		$IRC = preg_replace("/<i>(.*)<\/i>/", self::italic('$1'), $IRC);
+		$IRC = preg_replace("/<u>(.*)<\/u>/", FontIRC::underline('$1'), $IRC);
+
+		// Remove extra HTML.
+		$IRC = preg_replace("/<[^>]*>/s", "", $IRC);
+
+		return trim($IRC);
 	}
 }
 
