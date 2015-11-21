@@ -41,6 +41,8 @@ class Replier extends PlugIRC_Core{
 			$this->lines = array();
 			exec($this->command, $this->lines);
 		}
+
+		return $reply;
 	}
 
 	public function privmsg(MessIRC $MessIRC){
