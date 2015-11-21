@@ -68,13 +68,13 @@ public function exceptionParse(Exception $e, MessIRC $MessIRC){
 
 protected function loadConfig(){
 	// ~/.config file
-	$confile = getenv('HOME')."/.config/aigis/plugins/config/".get_class($this).".ini";
+	$confile = PLUGIRC_HOMECFG.get_class($this).'.ini';
 	if(file_exists($confile))
 		$this->configFile = parse_ini_file($confile, true);
 
 	// Hardcoded config file.
-	elseif(file_exists("plugins/config/". get_class($this) . ".ini"))
-		$this->configFile = parse_ini_file("plugins/config/". get_class($this) . ".ini", true);
+	elseif(file_exists(PLUGIRC_CONFIG.get_class($this).'.ini'))
+		$this->configFile = parse_ini_file(PLUGIRC_HOMECFG.get_class($this).'.ini', true);
 
 	// Throw exception if config file required.
 	elseif($this->requireConfig == TRUE)

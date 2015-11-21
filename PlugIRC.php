@@ -4,7 +4,7 @@ require_once "PlugIRC_Core.php";
 
 // Include plugins.
 includeDirectory("plugins");
-includeDirectory(getenv("HOME")."/.config/aigis/plugins");
+includeDirectory(AIGIS_HOMEPLG);
 
 class NoticeException extends Exception {}
 class PlugIRC{
