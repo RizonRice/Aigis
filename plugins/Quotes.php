@@ -62,7 +62,7 @@ class Quotes extends PlugIRC_Core{
 			if(in_array($argv[0], $this->flags['search'])){
 				array_shift($argv);
 				$query  = implode(' ', $argv);
-				$quotes = searchQuotes($query);
+				$quotes = $this->searchQuotes($query);
 				$count  = count($quotes);
 
 				// No quotes.
