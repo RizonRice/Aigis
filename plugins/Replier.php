@@ -11,6 +11,7 @@ class Replier extends PlugIRC_Core{
 	protected $throttle = array();
 	protected $lines    = array();
 	protected $file     = ""; 
+	protected $command  = '';
 
 	public function __construct(AigisIRC $AigisIRC){
 		parent::__construct($AigisIRC);
@@ -23,17 +24,23 @@ class Replier extends PlugIRC_Core{
 		if(!file_exists(self::MARKOV_EXEC))
 			throw new Exception("Markov generator not found.");
 
-		$command = self::MARKOV_EXEC." $corpusFile";
-		exec($command, $this->lines);
+		$this->command = self::MARKOV_EXEC." $corpusFile";
+		exec($this->command, $this->lines);
 		$this->file = $corpusFile;
 	}
 
 
 	public function getReply(){
-		$markov = $this->lines;
-		$repkey = array_rand($markov);
+		$repkey = array_rand($this->lines);
 
-		return $markov[$repkey];
+		$reply = $this->lines[$repkey];
+		unset($this->lines[$repkey]);
+
+		if(count($this->lines) <= 0){
+			$this->consoleSend('Generating markov...');
+			$this->lines = array();
+			exec($this->command, $this->lines);
+		}
 	}
 
 	public function privmsg(MessIRC $MessIRC){
@@ -51,9 +58,9 @@ class Replier extends PlugIRC_Core{
 		if(time() - $this->throttle[$chan] < self::THROTTLE_TIME)
 			return;
 
-		$nick = strtolower($this->AigisIRC->getAigisVar("botNick"));
-		$str  = strtolower($MessIRC->getMessage());
-		if(substr_count($str, $nick) === 0)
+		$nick = $this->UserIRC->getSelf()->getNick();
+		$str  = $MessIRC->getMessage();
+		if(!preg_match("/\b$nick\b/", $str))
 			return;
 
 		$this->ConnIRC->msg($chan, $this->getReply());
