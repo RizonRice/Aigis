@@ -106,7 +106,7 @@ static public function URLTitle($url){
 	$page = curl::getAll($url);
 	if(preg_match("/<title>([^<]+)<\/title>/mi", $page, $title)){
 		$title = str_replace("\n", " ", $title[1]);
-		return trim(html_entity_decode($title));
+		return trim(FontIRC::HTML2IRC($title));
 	}
 }
 

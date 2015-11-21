@@ -121,7 +121,7 @@ class WebStuff extends PlugIRC_Core{
 		$result = $json['responseData']['results'][0];
 		$URL    = $result['url'];
 		$cont =
-		str_replace("\n", "", self::IRC2HTML($result['content']));
+		str_replace("\n", "", FontIRC::HTML2IRC($result['content']));
 		$cont = preg_replace_callback("/(&#[0-9]+;)/",
 			function($m){
 				return mb_convert_encoding($m[1], "UTF-8", "HTML-ENTITIES");
@@ -131,24 +131,4 @@ class WebStuff extends PlugIRC_Core{
 			FontIRC::italic($URL)." - $cont");
 	}
 
-	public static function IRC2HTML($HTML){
-		// Unicode/HTML entities.
-		$HTML = html_entity_decode($HTML);
-		$HTML = preg_replace_callback("/(&#[0-9]+;)/",
-			function($m){ return mb_convert_encoding($m[1], "UTF-8", "HTML-ENTITIES"); },
-			$HTML);
-
-		// Bold, italic, underline, etc.
-		$HTML = preg_replace("/<b>(.*)<\/b>/", FontIRC::bold('$1'), $HTML);
-		$HTML = preg_replace("/<i>(.*)<\/i>/", FontIRC::italic('$1'), $HTML);
-		$HTML = preg_replace("/<u>(.*)<\/u>/", FontIRC::underline('$1'), $HTML);
-
-		// Remove extra HTML.
-		$HTML = preg_replace("/<[^>]*>/s", "", $HTML);
-
-		// Trim
-		$HTML = trim($HTML);
-
-		return $HTML;
-	}
 }
