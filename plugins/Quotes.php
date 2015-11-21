@@ -6,15 +6,17 @@ class Quotes extends PlugIRC_Core{
 	const PLUGIN_DESC = "IRC quotes database.";
 	const PLUGIN_VERSION = '2.00';
 
+	protected $flags = array(
+		'add'  => array('-a', '--add'),
+		'last' => array('-l', '--last'));
+
 	public function __construct(AigisIRC $AigisIRC){
 		parent::__construct($AigisIRC);
-		$this->PDO = new PDO('sqlite:plugins/etc/Quotes.sqlite');
+		$dbFile = AIGIS_USR.'/Quotes.sqlite';
+		$this->PDO = new PDO('sqlite:'.$dbFile);
 
-		if(!file_exists('/usr/lib/sqlite3/pcre.so'))
-			throw new Exception('SQLite3 PCRE extension not installed. Try installing sqlite3-pcre.');
 		$this->PDO->exec('.load /usr/lib/sqlite3/pcre.so');
-
-		$this->PDO->exec("CREATE TABLE IF NOT EXISTS quotes('id' INTEGER PRIMARY KEY NOT NULL, 'quote' TEXT, 'quoter' TEXT, TIME INTEGER);");
+		$this->PDO->exec("CREATE TABLE IF NOT EXISTS quotes('id' INTEGER PRIMARY KEY NOT NULL, 'quote' TEXT, 'quoter' TEXT, 'time' INTEGER);");
 
 		$this->triggers = array(
 			"aquote" => "aquote",
@@ -32,17 +34,76 @@ class Quotes extends PlugIRC_Core{
 		// Random quote.
 		if(!isset($argv[0])){
 			$count = $this->getQuoteCount();
-			$id = rand(1, $count-1);
-			$quote = $this->getQuote($id, $quoter, $time);
+			$id = rand(1, $count);
 
-			$reply = "Quote $id: $quote\x0F :: Added by $quoter on $time";
-			$this->ConnIRC->msg($MessIRC->getReplyTarget(), $reply);
+			$this->ConnIRC->msg($MessIRC->getReplyTarget(), $this->getReply($id));
 		}
 
+		// Flags.
+		elseif(strpos($argv[0], "-") === 0){
+			// Add a quote.
+			if(in_array($argv[0], $this->flags['add'])){
+				array_shift($argv);
+				$quote = implode(' ', $argv);
+				$nick  = $MessIRC->getNick();
+				$id    = $this->addQuote($quote, $nick);
+				$this->ConnIRC->msg($MessIRC->getReplyTarget(),
+					"Added. ID: $id");
+			}
+			// Get last quote.
+			if(in_array($argv[0], $this->flags['last'])){
+				$last = $this->getQuoteCount();
+				$this->ConnIRC->msg($MessIRC->getReplyTarget(),
+					$this->getReply($last));
+			}
+			// Search for a quote.
+			if(in_array($argv[0], $this->flags['search'])){
+				array_shift($argv);
+				$query  = implode(' ', $argv);
+				$quotes = searchQuotes($query);
+				$count  = count($quotes);
+
+				// No quotes.
+				if($count == 0)
+					throw new Exception('No quotes found.');
+				// One quote.
+				elseif($count == 1){
+					$this->ConnIRC->msg($MessIRC->getReplyTarget(),
+						$this->getReply($count[0]));
+				}
+				// Many quotes.
+				else{
+					$reply = 'Quotes matching '.FontIRC::italic($query).
+						': '.implode(' ', $quotes);
+
+					if(count($query) > 120)
+						$this->ConnIRC->notice($MessIRC->getNick(), $reply);
+					else
+						$this->ConnIRC->msg($MessIRC->getReplyTarget(), $reply);
+				}
+			}
+		}
+
+		// Quote ID.
+		elseif(ctype_digit($argv[0])){
+			
+		}
+
+		// Default to searching.
+		else{
+
+		}
+	}
+
+	public function getReply($id){
+		$quote = $this->getQuote($id, $quoter, $time);
+		return FontIRC::bold("Quote $id").': '.
+			FontIRC::terminate($quote).' :: Added by '.
+			FontIRC::italic($quoter).' on '.FontIRC::italic($time);
 	}
 
 	public function getQuoteCount(){
-		if($sth = $this->PDO->query("SELECT COUNT(*) FROM quotes;"))
+		if($sth = $this->PDO->query("SELECT COUNT(*) FROM quotes WHERE id != 0;"))
 			return $sth->fetchColumn();
 		else throw new Exception('Error parsing database.');
 	}
@@ -50,7 +111,8 @@ class Quotes extends PlugIRC_Core{
 	public function getQuote($id, &$quoter, &$time){
 		if($sth = $this->PDO->prepare("SELECT quote,quoter,time FROM quotes WHERE id=?;")){
 			$sth->execute(array($id));
-			$quote = $sth->fetch(PDO::FETCH_ASSOC);
+			if(($quote = $sth->fetch(PDO::FETCH_ASSOC)) === false)
+				throw new Exception("Quote $id not found.");
 
 			$quoter = $quote['quoter'];
 			$time   = $quote['time'];
@@ -61,7 +123,7 @@ class Quotes extends PlugIRC_Core{
 	public function addQuote($quote, $quoter){
 		$user = $this->UserIRC->getUser($quoter);
 		$quoter = $user->getUsername();
-		if($sth = $this->AigisDB->prepare("INSERT INTO quotes (quoter, quote, time) VALUES(:quoter,:quote,:time);")){
+		if($sth = $this->PDO->prepare("INSERT INTO quotes (quoter, quote, time) VALUES(:quoter,:quote,DATETIME(:time));")){
 			$sth->execute(array(
 				':quoter' => $quoter,
 				':quote'  => $quote,
