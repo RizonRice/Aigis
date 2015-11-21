@@ -68,7 +68,7 @@ public function exceptionParse(Exception $e, MessIRC $MessIRC){
 
 protected function loadConfig(){
 	// ~/.config file
-	$confile = PLUGIRC_HOMECFG.get_class($this).'.ini';
+	$confile = PLUGIRC_HOMECFG.'/'.get_class($this).'.ini';
 	if(file_exists($confile))
 		$this->configFile = parse_ini_file($confile, true);
 
