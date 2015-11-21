@@ -10,10 +10,8 @@ class textdatabase{
 		if(!file_exists($fileDir)){
 			if(preg_match("/(.*\/).+/", $fileDir, $match)){
 				$dir = $match[1];
-				if(!is_dir($dir)){
-					mkdir($dir, "0770", true);
-					consoleSend("Created directory $dir and made $fileDir");
-				}
+				if(!is_dir($dir))
+					mkdir($dir, 0755, true);
 			}
 			file_put_contents($fileDir, "{}");
 		}
