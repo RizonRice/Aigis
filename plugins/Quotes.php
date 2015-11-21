@@ -19,7 +19,7 @@ class Quotes extends PlugIRC_Core{
 		$this->PDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 		$this->PDO->sqliteCreateFunction('REGEXP', function($regex, $string){
-			return (bool) preg_match("/$regex/", $string);
+			return (bool) preg_match("/$regex/i", $string);
 		}, 2);
 		$this->PDO->exec("CREATE TABLE IF NOT EXISTS quotes('id' INTEGER PRIMARY KEY NOT NULL, 'quote' TEXT, 'quoter' TEXT, 'time' INTEGER);");
 
@@ -129,7 +129,7 @@ class Quotes extends PlugIRC_Core{
 	public function addQuote($quote, $quoter){
 		$user = $this->UserIRC->getUser($quoter);
 		$quoter = $user->getUsername();
-		if($sth = $this->PDO->prepare("INSERT INTO quotes (quoter, quote, time) VALUES(:quoter,:quote,DATETIME(:time));")){
+		if($sth = $this->PDO->prepare("INSERT INTO quotes VALUES(NULL,:quote,:quoter,DATETIME(:time));")){
 			$sth->execute(array(
 				':quoter' => $quoter,
 				':quote'  => $quote,
