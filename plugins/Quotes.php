@@ -7,8 +7,10 @@ class Quotes extends PlugIRC_Core{
 	const PLUGIN_VERSION = '2.00';
 
 	protected $flags = array(
-		'add'  => array('-a', '--add'),
-		'last' => array('-l', '--last'));
+		'add'    => array('-a', '--add'),
+		'last'   => array('-l', '--last'),
+		'search' => array('-s', '--search')
+		);
 
 	public function __construct(AigisIRC $AigisIRC){
 		parent::__construct($AigisIRC);
