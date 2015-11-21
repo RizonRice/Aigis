@@ -81,7 +81,7 @@ class Quotes extends PlugIRC_Core{
 					$reply = 'Quotes matching '.FontIRC::italic($query).
 						': '.implode(' ', $quotes);
 
-					if(count($query) > 120)
+					if(count($argv) > 120)
 						$this->ConnIRC->notice($MessIRC->getNick(), $reply);
 					else
 						$this->ConnIRC->msg($MessIRC->getReplyTarget(), $reply);
@@ -129,7 +129,7 @@ class Quotes extends PlugIRC_Core{
 	public function addQuote($quote, $quoter){
 		$user = $this->UserIRC->getUser($quoter);
 		$quoter = $user->getUsername();
-		if($sth = $this->PDO->prepare("INSERT INTO quotes VALUES(NULL,:quote,:quoter,DATETIME(:time));")){
+		if($sth = $this->PDO->prepare("INSERT INTO quotes VALUES(NULL,:quote,:quoter,:time);")){
 			$sth->execute(array(
 				':quoter' => $quoter,
 				':quote'  => $quote,
