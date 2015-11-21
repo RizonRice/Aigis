@@ -16,8 +16,11 @@ class Quotes extends PlugIRC_Core{
 		parent::__construct($AigisIRC);
 		$dbFile = AIGIS_USR.'/Quotes.sqlite';
 		$this->PDO = new PDO('sqlite:'.$dbFile);
+		$this->PDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-		$this->PDO->exec('.load /usr/lib/sqlite3/pcre.so');
+		$this->PDO->sqliteCreateFunction('REGEXP', function($regex, $string){
+			return (bool) preg_match("/$regex/", $string);
+		}, 2);
 		$this->PDO->exec("CREATE TABLE IF NOT EXISTS quotes('id' INTEGER PRIMARY KEY NOT NULL, 'quote' TEXT, 'quoter' TEXT, 'time' INTEGER);");
 
 		$this->triggers = array(
@@ -88,6 +91,7 @@ class Quotes extends PlugIRC_Core{
 
 		// Quote ID.
 		elseif(ctype_digit($argv[0])){
+
 			
 		}
 
@@ -136,7 +140,7 @@ class Quotes extends PlugIRC_Core{
 }
 
 	public function searchQuotes($searchTerm){
-		if($sth = $this->PDO->prepare("SELECT id FROM quotes WHERE quote REGEXP ?;")){
+		if($sth = $this->PDO->prepare("SELECT id FROM quotes WHERE REGEXP(?, quote);")){
 			$sth->execute(array($searchTerm));
 			$ids = array();
 			$result = $sth->fetchAll();
