@@ -1,6 +1,6 @@
 <?php
 // For use with AigisPermissions.php
-class AigisPermissions_DB{
+class Permissions_DB{
 
 private $PDO;
 private $UserIRC;
