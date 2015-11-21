@@ -15,7 +15,7 @@ private $nickPerms = array();
 public function __construct(AigisIRC $AigisIRC){
 	parent::__construct($AigisIRC);
 
-	$this->database = new AigisPermissions_DB($this->UserIRC, $this->ConnIRC->getNetwork());
+	$this->database = new Permissions_DB($this->UserIRC, $this->ConnIRC->getNetwork());
 
 	$nickPerms = $this->database->fetchNickPermissions();
 	foreach($nickPerms as $permission){
