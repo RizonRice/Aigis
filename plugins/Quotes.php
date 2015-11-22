@@ -12,6 +12,8 @@ class Quotes extends PlugIRC_Core{
 		'search' => array('-s', '--search')
 		);
 
+	protected $PDO;
+
 	public function __construct(AigisIRC $AigisIRC){
 		parent::__construct($AigisIRC);
 		$dbFile = AIGIS_USR.'/Quotes.sqlite';
