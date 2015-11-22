@@ -81,7 +81,7 @@ class Quotes extends PlugIRC_Core{
 					$reply = 'Quotes matching '.FontIRC::italic($query).
 						': '.implode(' ', $quotes);
 
-					if(count($argv) > 120)
+					if($count > 120)
 						$this->ConnIRC->notice($MessIRC->getNick(), $reply);
 					else
 						$this->ConnIRC->msg($MessIRC->getReplyTarget(), $reply);
