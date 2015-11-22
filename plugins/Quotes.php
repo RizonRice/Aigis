@@ -91,8 +91,8 @@ class Quotes extends PlugIRC_Core{
 
 		// Quote ID.
 		elseif(ctype_digit($argv[0])){
-
-			
+			$this->ConnIRC->msg($MessIRC->getReplyTarget(),
+				$this->getReply($argv[0]));
 		}
 
 		// Default to searching.
