@@ -14,7 +14,7 @@ class AigisURL extends PlugIRC_Core{
 	protected $permission;
 
 	protected $flags = array(
-		'add'     => array('-a', '--add'),
+		'add'     => array('-a', '--add', '-s', '--set'),
 		'delete'  => array('-d', '--delete'),
 		'replace' => array('-r', '--replace') );
 

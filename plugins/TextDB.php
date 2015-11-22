@@ -13,7 +13,7 @@ class TextDB extends PlugIRC_Core{
 	protected $permission;
 
 	protected $flags = array(
-		'set'     => array('-s', '--set'),
+		'set'     => array('-s', '--set', '-a', '--add'),
 		'delete'  => array('-d', '--delete'),
 	);
 
