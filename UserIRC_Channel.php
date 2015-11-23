@@ -22,7 +22,9 @@ public function addMessage(MessIRC $message){
 }
 
 public function getMessage($number = 0){
-	return $this->msgs[$number];
+	if(isset($this->msgs[$number]))
+		return $this->msgs[$number];
+	else return null;
 }
 
 public function getMessageCount(){
