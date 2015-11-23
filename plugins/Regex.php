@@ -6,7 +6,7 @@ class Regex extends PlugIRC_Core{
 	const PLUGIN_DESC = "Regular expressions in IRC.";
 
 	const REPLY_MAX_EXTEND = 15;
-	private $prefixesToAvoid = array('s/', 'c/', '!', '~');
+	private $prefixesToAvoid = array('s/', '!', '~');
 
 	public function __construct(AigisIRC $AigisIRC){
 		parent::__construct($AigisIRC);
@@ -16,39 +16,95 @@ class Regex extends PlugIRC_Core{
 	public function privmsg(MessIRC $MessIRC){
 		if(!$MessIRC->inChannel())
 			return;
-		if(preg_match('/^s\/(.*)\/(.*)\/(.*)$/', $MessIRC->getMessage(), $regex)){
-			if($this->PlugIRC->getPermission($MessIRC, "regex") != 2)
+		if($this->PlugIRC->getPermission($MessIRC, 'regex') != 2)
+			return;
+		$method = $MessIRC->getMessage();
+		if(strpos($method, 's/') === 0){
+			$chan = $MessIRC->getReplyTarget();
+
+			// Separate by semicolon like in GNU sed.
+			$regexes = explode(';', $method);
+
+			if(preg_match('/^s\/(.+)\/(.*)\/(.*)$/', $regexes[0], $m))
+				$origReg = '/'.$m[1].'/'.$m[3];
+			else return;
+
+			if(($msg = $this->getLastMessage($chan, $origReg)) === false)
+				return;
+
+			$new = $msg->getMessage();
+			foreach($regexes as $regex){
+				if(strpos($regex, 's/') !== 0)
 					return;
-	
-			$search  = $regex[1];
-			$replace = $regex[2];
-			$flags   = str_replace('g', '', $regex[3], $gCount);
-			$limit   = ($gCount == 0) ? 1 : -1;
-			if(!$MessIRC->inChannel()) return;
-			$channel = $this->UserIRC->getChannel($MessIRC->getReplyTarget());
-	
-			$msgid = 1;
-			while($msg = $channel->getMessage($msgid)){
-				if($msg->parseCommand(array_merge($this->prefixes, $this->prefixesToAvoid))){
-						$msgid++;
-					continue;
+				$regex = strstr($regex, 's/');
+
+				// Replace escaped / to something else.
+				$regex = str_replace('\/', "\x01", $regex);
+				if(preg_match('/^s\/(.+)\/(.*)\/(.*)$/', $regex, $m)){
+					$method  = $m[1];
+					$replace = $m[2];
+					$flags   = $m[3];
+					$full    = "/$method/$flags";
+
+					if(!$this->validRegex($full))
+						continue;
+
+					$new = $this->replace($new, $replace, $full);
+					$new = str_replace("\x01", '/', $new);
 				}
-				if(($replaced = @preg_replace("/$search/$flags", $replace, $msg->getMessage(), $limit)) !== $msg->getMessage() && $replaced !== ""){
-				if(strlen($replaced) > (strlen($msg->getMessage()) + self::REPLY_MAX_EXTEND) && $this->PlugIRC->getPermission($MessIRC, "regex.NO_BRAKES") != 2)
-						$this->ConnIRC->msg($MessIRC->getReplyTarget(), "<".$msg->getNick()."> [Something uncontrollably long.]");
-					else{
-						if($msg->isAction())
-							$this->ConnIRC->msg($MessIRC->getReplyTarget(), "* ".$msg->getNick()." ".$replaced);
-						else
-							$this->ConnIRC->msg($MessIRC->getReplyTarget(), "<".$msg->getNick()."> ".$replaced);
-					}
-					return;
-				}else $msgid++;		
 			}
+
+			// Check reply size.
+			$maxSize = count($msg->getMessage()) + self::REPLY_MAX_EXTEND;
+			//if($maxSize > strlen($new))
+			//	throw new Exception("P-please don't.");
+
+			// Determine reply type.
+			$nick = $msg->getNick();
+			if($msg->isAction())
+				$reply = "* $nick $new";
+			else
+				$reply = "<$nick> $new";
+
+			$this->ConnIRC->msg($chan, $reply);
 		}
 	}
 
-}
+	public function validRegex($regex){
+		if(@preg_match($regex, "test") === false)
+			return false;
+		else return true;
+	}
 
-// I can assure you this messy code will be rewritten.
-// It's in my 2016 resolution.
+	public function replace($string, $replace, $regex){
+		if(preg_match('/^\/(.+)\/(.*)$/', $regex, $m)){
+			$method = $m[1];
+			$flags  = $m[2];
+			str_replace('g', '', $flags, $global);
+
+			if($global)
+				$global = -1;
+			else
+				$global = 1;
+
+			return @preg_replace($regex, $replace, $string, $global);
+		}
+		return $string;
+	}
+
+	public function getLastMessage($chan, $method){
+		$obj = $this->UserIRC->getChannel($chan);
+		$prefixes = array_merge($this->prefixes, $this->prefixesToAvoid);
+		$i = 0;
+		while($msg = $obj->getMessage($i)){
+			if($msg->parseCommand($prefixes) or !@preg_match($method, $msg->getMessage())){
+				$i++;
+				continue;
+			}
+
+			return $msg;
+		}
+		return false;
+	}
+
+}
