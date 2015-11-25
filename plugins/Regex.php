@@ -45,8 +45,10 @@ class Regex extends PlugIRC_Core{
 					$replace = $m[2];
 					$flags   = $m[3];
 					$full    = "/$method/$flags";
+					// Ignore the g flag when checking valid regex.
+					$check   = "/$method/".str_replace('g', '', "$flags");
 
-					if(!$this->validRegex($full))
+					if(!$this->validRegex($check))
 						continue;
 
 					$new = $this->replace($new, $replace, $full);
