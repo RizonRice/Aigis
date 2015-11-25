@@ -107,7 +107,7 @@ class Quotes extends PlugIRC_Core{
 		$quote = $this->getQuote($id, $quoter, $time);
 		return FontIRC::bold("Quote $id").': '.
 			FontIRC::terminate($quote).' :: Added by '.
-			FontIRC::italic($quoter).' on '.FontIRC::italic(date('j/n/Y H/i', $time));
+			FontIRC::italic($quoter).' on '.FontIRC::italic(date('j/n/Y H:i', $time));
 	}
 
 	public function getQuoteCount(){
