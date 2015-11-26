@@ -74,7 +74,7 @@ protected function loadConfig(){
 
 	// Hardcoded config file.
 	elseif(file_exists(PLUGIRC_CONFIG.'/'.get_class($this).'.ini'))
-		$this->configFile = parse_ini_file(PLUGIRC_HOMECFG.get_class($this).'.ini', true);
+		$this->configFile = parse_ini_file(PLUGIRC_HOMECFG.get_class($this).'/'.'.ini', true);
 
 	// Throw exception if config file required.
 	elseif($this->requireConfig == TRUE)
